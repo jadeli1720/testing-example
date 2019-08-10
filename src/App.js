@@ -1,26 +1,79 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { withFormik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
-function App() {
+function App({ isSubmitting, errors, status }) {
+  const [contacts, setContacts] = React.useState([
+    { name: 'John Doe', email: 'john@doe.com' }
+  ]);
+  React.useEffect(() => {
+    status && setContacts(contacts => [...contacts, status]);
+  }, [status]);
+  console.log(errors);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+      <h1>Contacts</h1>
+      <Form>
+        <Input name='name' placeholder='John Doe' labelText='Name' />
+        <Input
+          name='email'
+          placeholder='email@gmail.com'
+          labelText='Email'
+          type='email'
+        />
+        <button
+          type='submit'
+          disabled={isSubmitting || Object.keys(errors).length}>
+          Submit
+        </button>
+      </Form>
+      <Contacts contacts={contacts} />
     </div>
   );
 }
 
-export default App;
+const Input = ({ name, placeholder, labelText, type }) => (
+  <>
+    <label htmlFor={name}>
+      {labelText}
+      <Field type={type || 'text'} name={name} placeholder={placeholder} />
+    </label>
+    <ErrorMessage name={name}>
+      {err => <div className='error'>{err}</div>}
+    </ErrorMessage>
+  </>
+);
+
+const Contacts = ({ contacts }) =>
+  contacts.map(({ name, email }) => (
+    <div>
+      <p>Name: {name}</p>
+      <p>Email: {email}</p>
+    </div>
+  ));
+
+const formikOptions = {
+  mapPropsToValues() {
+    return {
+      name: '',
+      email: ''
+    };
+  },
+  validationSchema: Yup.object().shape({
+    name: Yup.string()
+      .min(2, 'Names must be between 2 and 20 characters.')
+      .max(20, 'Names must be between 2 and 20 characters.')
+      .required('Name is required.'),
+    email: Yup.string()
+      .email('Email not valid')
+      .required('Email is required')
+  }),
+  handleSubmit(values, { resetForm, setSubmitting, setStatus }) {
+    setStatus(values);
+    resetForm();
+    setSubmitting(false);
+  }
+};
+
+export default withFormik(formikOptions)(App);
