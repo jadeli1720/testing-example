@@ -3,10 +3,10 @@ import './App.css';
 import { withFormik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
+export const initialContacts = [{ name: 'John Doe', email: 'john@doe.com' }];
+
 function App({ isSubmitting, errors, status }) {
-  const [contacts, setContacts] = React.useState([
-    { name: 'John Doe', email: 'john@doe.com' }
-  ]);
+  const [contacts, setContacts] = React.useState(initialContacts);
   React.useEffect(() => {
     status && setContacts(contacts => [...contacts, status]);
   }, [status]);
@@ -67,7 +67,7 @@ const formikOptions = {
       .required('Name is required.'),
     email: Yup.string()
       .email('Email not valid')
-      .required('Email is required')
+      .required('Email is required.')
   }),
   handleSubmit(values, { resetForm, setSubmitting, setStatus }) {
     setStatus(values);
