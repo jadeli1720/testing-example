@@ -10,7 +10,7 @@ function App({ isSubmitting, errors, status }) {
   React.useEffect(() => {
     status && setContacts(contacts => [...contacts, status]);
   }, [status]);
-  console.log(errors);
+
   return (
     <div className='App'>
       <h1>Contacts</h1>
@@ -35,7 +35,7 @@ function App({ isSubmitting, errors, status }) {
 
 const Input = ({ name, placeholder, labelText, type }) => (
   <>
-    <label htmlFor={name}>
+    <label htmlFor={name} aria-labelledby={name}>
       {labelText}
       <Field type={type || 'text'} name={name} placeholder={placeholder} />
     </label>
@@ -46,8 +46,8 @@ const Input = ({ name, placeholder, labelText, type }) => (
 );
 
 const Contacts = ({ contacts }) =>
-  contacts.map(({ name, email }) => (
-    <div>
+  contacts.map(({ name, email }, idx) => (
+    <div key={idx}>
       <p>Name: {name}</p>
       <p>Email: {email}</p>
     </div>
